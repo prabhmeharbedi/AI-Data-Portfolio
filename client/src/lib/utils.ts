@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const userProfile = {
   name: "Prabhmehar Pal Singh Bedi",
-  title: "AI Engineer & Data Scientist",
+  title: "Generative AI Engineer & ML Enthusiast",
   intro: "I develop advanced AI solutions with a focus on Retrieval-Augmented Generation (RAG) and practical machine learning applications. Specializing in LLMs, computer vision, and sentiment analysis.",
   email: "prabhmehar2509@gmail.com",
   location: "Bengaluru, India",

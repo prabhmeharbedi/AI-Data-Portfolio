@@ -48,7 +48,7 @@ const Home: React.FC = () => {
               <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="show">
                 <motion.div variants={itemVariants}>
                   <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                    Data Science & AI
+                    Generative AI & ML
                   </span>
                 </motion.div>
                 
@@ -202,7 +202,7 @@ const Home: React.FC = () => {
               Featured Projects
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 font-medium max-w-3xl mx-auto">
-              Explore some of my recent data science and AI projects that showcase my skills and expertise.
+              Explore some of my recent Generative AI and machine learning projects that showcase my skills and expertise.
             </p>
           </motion.div>
 
@@ -299,48 +299,4 @@ const Home: React.FC = () => {
               (activeSkillCategory === null || activeSkillCategory === category) && 
               categorySkills.map((skill, index) => (
                 <motion.div
-                  key={`${category}-${index}`}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)" }}
-                  className="bg-gray-200 dark:bg-gray-900 rounded-lg shadow p-4 text-center border border-gray-300 dark:border-gray-700 flex items-center justify-center"
-                >
-                  <span className="text-gray-800 dark:text-gray-100 font-medium">{skill}</span>
-                </motion.div>
-              ))
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-6 md:px-12 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto"
-          >
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">Ready to collaborate?</h2>
-            <p className="text-lg mb-8 text-white/80">
-              I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
-            </p>
-            <button 
-              onClick={() => navigate('/contact')}
-              className="bg-gray-800 text-white hover:bg-gray-900 py-3 px-8 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-            >
-              Get in Touch
-            </button>
-          </motion.div>
-        </div>
-      </section>
-    </>
-  );
-};
-
-export default Home;
+                  key={`${category}-${index}`

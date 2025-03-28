@@ -52,7 +52,7 @@ const Projects: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Explore some of my recent data science and AI projects that showcase my skills and expertise.
+            Explore some of my recent Generative AI and machine learning projects that showcase my skills and expertise.
           </motion.p>
         </div>
         

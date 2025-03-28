@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 // Portfolio context for AI responses - focusing only on resume data
 const portfolioContext = `
-You are an AI assistant for a data science and AI portfolio website. Your ONLY purpose is to answer questions 
+You are an AI assistant for a Generative AI and Machine Learning portfolio website. Your ONLY purpose is to answer questions 
 based on the resume information below. DO NOT make up any information or provide details not found in this resume.
 
 RESUME INFORMATION:
