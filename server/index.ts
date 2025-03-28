@@ -1,6 +1,26 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Runtime configuration check
+function checkRequiredConfig() {
+  const requiredEnvVars = [
+    // Add required environment variables here if needed
+  ];
+  
+  const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
+  
+  if (missing.length > 0) {
+    console.error(`Missing required environment variables: ${missing.join(", ")}`);
+    process.exit(1);
+  }
+  
+  log("Configuration validation passed");
+}
 
 const app = express();
 app.use(express.json());
@@ -37,6 +57,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Check configuration before startup
+  checkRequiredConfig();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -47,20 +70,22 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Use environment mode to determine setup
+  const isDevelopment = process.env.NODE_ENV !== "production";
+  log(`Running in ${isDevelopment ? "development" : "production"} mode`);
+  
+  if (isDevelopment) {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 3000;
-  server.listen(port, 'localhost', () => {
-    log(`serving on http://localhost:${port}`);
+  // Use PORT from environment variables with fallback
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  // In production, allow binding to any available interface
+  const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+  
+  server.listen(port, host, () => {
+    log(`Server running on http://${host}:${port}`);
   });
 })();

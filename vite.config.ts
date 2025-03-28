@@ -31,7 +31,16 @@ export default defineConfig({
   },
   root: path.resolve(__dirname, "client"),
   build: {
-    outDir: path.resolve(__dirname, "dist/public"),
+    outDir: path.resolve(__dirname, "dist", "client"),
     emptyOutDir: true,
+    assetsDir: "assets",
+    sourcemap: process.env.NODE_ENV !== "production",
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: process.env.NODE_ENV === "production",
+      },
+    },
+    manifest: true,
   },
 });

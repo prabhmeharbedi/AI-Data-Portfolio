@@ -5,10 +5,14 @@ import { z } from "zod";
 import { insertMessageSchema } from "@shared/schema";
 import { getAIResponse } from "./openai-service";
 import { sendContactEmail, verifyEmailConnection } from "./email-service";
+import { healthRouter } from "./routes/health";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Verify email connection when server starts
   await verifyEmailConnection();
+
+  // Register health check endpoint
+  app.use("/api/health", healthRouter);
 
   // API routes
   app.post("/api/contact", async (req, res) => {
