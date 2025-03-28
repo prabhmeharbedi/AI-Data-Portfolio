@@ -2,9 +2,9 @@ AI-Integrated Data Science Portfolio Website Blueprint
 Introduction: This blueprint describes a portfolio website for a Data Scientist & AI Engineer that is both a professional showcase and a piece of interactive art. The design merges abstract artistic visuals with cutting-edge AI features, creating a premium, immersive experience. The site will feel like stepping into a future-tech art gallery – an abstract yet highly functional space where visitors can explore the creator’s background, projects, and tools in an engaging way. We prioritize a responsive, fast, and accessible implementation throughout.
 Visual Design
 The visual style will combine abstract art influences with modern web design for a rich aesthetic. Expect animated generative canvases and surreal gradients as the backdrop to content. For example, a dynamic generative art background (using libraries like p5.js or Three.js) can produce evolving shapes, neural-network motifs, or particle systems that react subtly to user input​
-PURPLEPLANET.COM
+Prabhmehar
 ​
-PURPLEPLANET.COM
+Prabhmehar
 . This not only adds a wow-factor but also symbolizes the blend of AI and creativity. Smooth gradients shifting in hue and organic, flowing forms give a surreal, high-end feel. Typography will be minimalist yet expressive. Use a clean, modern typeface for body text and perhaps a distinctive display font for headings or the name logo. The contrast between artsy visuals and crisp text creates professionalism amid creativity. Ample whitespace and an asymmetric layout will keep the design elite and uncluttered, avoiding anything overly busy. Every element should feel intentionally placed, much like art in a gallery. A restrained color palette (for instance, deep charcoal or navy as a base with vibrant accent colors from the generative art) can convey a classy tone. The key is balancing modern art with polished readability – ensuring text and UI controls are clear against the abstract backgrounds.
 Site Sections
 The website is divided into distinct sections, each with its own interactive art elements and content. Smooth scrolling or menu navigation allows transitioning between these sections with visual continuity. The core sections include:

@@ -180,14 +180,94 @@ async function getAIResponse(userMessage) {
   }
 }
 
+// server/email-service.ts
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+var EMAIL_USER = process.env.EMAIL_USER;
+var EMAIL_PASS = process.env.EMAIL_PASS;
+var EMAIL_HOST = process.env.EMAIL_HOST || "smtp.gmail.com";
+var EMAIL_PORT = parseInt(process.env.EMAIL_PORT || "587", 10);
+var EMAIL_FROM = process.env.EMAIL_FROM || EMAIL_USER;
+var EMAIL_TO = process.env.EMAIL_TO || EMAIL_USER;
+if (!EMAIL_USER || !EMAIL_PASS) {
+  console.error("ERROR: Email configuration is missing. Please check your .env file.");
+}
+var transporter = nodemailer.createTransport({
+  host: EMAIL_HOST,
+  port: EMAIL_PORT,
+  secure: EMAIL_PORT === 465,
+  // true for 465, false for other ports
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASS
+  }
+});
+async function sendContactEmail(name, email, subject, message) {
+  try {
+    const mailOptions = {
+      from: `"Portfolio Contact" <${EMAIL_FROM}>`,
+      to: EMAIL_TO,
+      subject: `Portfolio - ${subject}`,
+      text: `Name: ${name}
+Email: ${email}
+
+${message}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6C63FF;">New Contact Message from Portfolio</h2>
+          <p><strong>From:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            <p style="white-space: pre-line;">${message.replace(/\n/g, "<br>")}</p>
+          </div>
+          <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+            <p>This email was sent from your portfolio contact form.</p>
+          </div>
+        </div>
+      `
+    };
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw error;
+  }
+}
+async function verifyEmailConnection() {
+  try {
+    await transporter.verify();
+    console.log("Email server connection verified");
+    return true;
+  } catch (error) {
+    console.error("Email server connection failed:", error);
+    return false;
+  }
+}
+
 // server/routes.ts
 async function registerRoutes(app2) {
+  await verifyEmailConnection();
   app2.post("/api/contact", async (req, res) => {
     try {
       const messageData = insertMessageSchema.parse(req.body);
       const message = await storage.createMessage(messageData);
+      try {
+        await sendContactEmail(
+          messageData.name,
+          messageData.email,
+          messageData.subject,
+          messageData.message
+        );
+        console.log("Contact email sent successfully");
+      } catch (emailError) {
+        console.error("Error sending contact email:", emailError);
+      }
       res.json({ success: true, message: "Message sent successfully" });
     } catch (error) {
+      console.error("Contact form error:", error);
       res.status(400).json({ success: false, message: "Invalid message data" });
     }
   });
@@ -398,12 +478,8 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
   }
-  const port = 5e3;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true
-  }, () => {
-    log(`serving on port ${port}`);
+  const port = 3e3;
+  server.listen(port, "localhost", () => {
+    log(`serving on http://localhost:${port}`);
   });
 })();

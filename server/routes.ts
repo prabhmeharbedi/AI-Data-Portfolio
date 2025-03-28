@@ -4,15 +4,38 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertMessageSchema } from "@shared/schema";
 import { getAIResponse } from "./openai-service";
+import { sendContactEmail, verifyEmailConnection } from "./email-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Verify email connection when server starts
+  await verifyEmailConnection();
+
   // API routes
   app.post("/api/contact", async (req, res) => {
     try {
+      // Validate the incoming data
       const messageData = insertMessageSchema.parse(req.body);
+      
+      // Save to database
       const message = await storage.createMessage(messageData);
+      
+      // Send email notification
+      try {
+        await sendContactEmail(
+          messageData.name,
+          messageData.email,
+          messageData.subject,
+          messageData.message
+        );
+        console.log("Contact email sent successfully");
+      } catch (emailError) {
+        console.error("Error sending contact email:", emailError);
+        // We still return success even if email fails, since data was saved to DB
+      }
+      
       res.json({ success: true, message: "Message sent successfully" });
     } catch (error) {
+      console.error("Contact form error:", error);
       res.status(400).json({ success: false, message: "Invalid message data" });
     }
   });
