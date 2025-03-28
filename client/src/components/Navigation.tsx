@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import ThemeToggle from './ThemeToggle';
 import { cn } from '@/lib/utils';
 
 interface NavigationProps {
@@ -41,7 +40,7 @@ const Navigation: React.FC<NavigationProps> = ({ theme, toggleTheme }) => {
         <div className="flex justify-between items-center">
           <Link href="/" className="font-display text-2xl font-bold text-primary flex items-center gap-2">
             <span className="inline-block w-8 h-8 bg-primary rounded-full"></span>
-            PurplePlanet
+            Prabhmehar
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
@@ -60,8 +59,6 @@ const Navigation: React.FC<NavigationProps> = ({ theme, toggleTheme }) => {
           </div>
           
           <div className="flex items-center gap-4">
-            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-            
             <button 
               id="chatToggle" 
               onClick={() => document.dispatchEvent(new CustomEvent('toggleChat'))}
@@ -91,6 +88,7 @@ const Navigation: React.FC<NavigationProps> = ({ theme, toggleTheme }) => {
         <button 
           className="absolute top-6 right-6"
           onClick={() => setIsMobileMenuOpen(false)}
+          aria-label="Close mobile menu"
         >
           <i className="ph-x text-2xl"></i>
         </button>

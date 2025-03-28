@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           <div>
             <Link href="/" className="font-display text-2xl font-bold text-white flex items-center gap-2">
               <span className="inline-block w-8 h-8 bg-primary rounded-full"></span>
-              PurplePlanet
+              Prabhmehar
             </Link>
             <p className="text-gray-400 mt-2">Data Science & AI Portfolio</p>
           </div>
@@ -31,14 +31,11 @@ const Footer: React.FC = () => {
             <a href={userProfile.social.linkedin} className="w-10 h-10 rounded-full bg-dark-lighter hover:bg-primary flex items-center justify-center transition-colors" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
               <i className="ph-linkedin-logo"></i>
             </a>
-            <a href={userProfile.social.twitter} className="w-10 h-10 rounded-full bg-dark-lighter hover:bg-primary flex items-center justify-center transition-colors" aria-label="Twitter" target="_blank" rel="noopener noreferrer">
-              <i className="ph-twitter-logo"></i>
-            </a>
           </div>
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
-          <p>&copy; {new Date().getFullYear()} PurplePlanet. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Prabhmehar. All rights reserved.</p>
         </div>
       </div>
     </footer>

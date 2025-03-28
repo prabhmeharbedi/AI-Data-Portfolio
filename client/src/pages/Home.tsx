@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import { userProfile, projects, skills } from '@/lib/utils';
+import ProjectCard from '@/components/ProjectCard';
+import ProjectModal from '@/components/ProjectModal';
 
 const Home: React.FC = () => {
   const [, navigate] = useLocation();
   const [activeSkillCategory, setActiveSkillCategory] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
 
   // Animation variants
   const containerVariants = {
@@ -26,6 +29,14 @@ const Home: React.FC = () => {
 
   // Featured projects (first 3)
   const featuredProjects = projects.slice(0, 3);
+
+  const handleViewDetails = (id: number) => {
+    setSelectedProjectId(id);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProjectId(null);
+  };
 
   return (
     <>
@@ -96,24 +107,6 @@ const Home: React.FC = () => {
                   >
                     <i className="ph-linkedin-logo"></i>
                   </a>
-                  <a 
-                    href={userProfile.social.twitter} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-2xl text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" 
-                    aria-label="Twitter"
-                  >
-                    <i className="ph-twitter-logo"></i>
-                  </a>
-                  <a 
-                    href={userProfile.social.medium} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-2xl text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" 
-                    aria-label="Medium"
-                  >
-                    <i className="ph-medium-logo"></i>
-                  </a>
                 </motion.div>
               </motion.div>
             </div>
@@ -129,20 +122,36 @@ const Home: React.FC = () => {
                 }}
                 transition={{ duration: 1 }}
               >
+                {/* Profile Image with faded edges */}
+                <div 
+                  className="absolute inset-2 rounded-full overflow-hidden z-10"
+                  style={{
+                    maskImage: 'radial-gradient(circle, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'radial-gradient(circle, black 70%, transparent 100%)'
+                  }}
+                >
+                  <img 
+                    src="/images/me.jpg" 
+                    alt={`${userProfile.name} - ${userProfile.title}`}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+                
                 <motion.div 
-                  className="absolute inset-2 rounded-full bg-light dark:bg-dark"
+                  className="absolute inset-0 rounded-full bg-light dark:bg-dark z-5"
                   animate={{ 
                     boxShadow: ["inset 0 0 20px rgba(108, 99, 255, 0.3)", "inset 0 0 60px rgba(108, 99, 255, 0.6)", "inset 0 0 20px rgba(108, 99, 255, 0.3)"]
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
+                
                 <motion.div 
-                  className="absolute -inset-4 rounded-full border-2 border-primary/20"
+                  className="absolute -inset-4 rounded-full border-2 border-primary/20 z-20"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 />
                 <motion.div 
-                  className="absolute -inset-12 rounded-full border border-primary/10"
+                  className="absolute -inset-12 rounded-full border border-primary/10 z-20"
                   animate={{ rotate: -360 }}
                   transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
                 />
@@ -173,8 +182,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Featured Projects Section */}
-      <section id="featured-projects" className="py-20 bg-light-darker/30 dark:bg-dark-lighter/30">
-        <div className="container mx-auto px-6 md:px-12">
+      <section id="featured-projects" className="py-20 bg-light-darker/30 dark:bg-dark-lighter/30 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-96 bg-primary/5 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-20 left-0 w-1/4 h-64 bg-primary/10 rounded-full filter blur-3xl"></div>
+        
+        <div className="container mx-auto px-6 md:px-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -182,51 +195,36 @@ const Home: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Featured Projects</h2>
-            <p className="text-lg text-gray-800 dark:text-gray-100 font-medium max-w-3xl mx-auto">
+            <span className="inline-block px-3 py-1 bg-primary/10 text-primary dark:text-primary-light text-sm rounded-full mb-4 font-medium">
+              My Work
+            </span>
+            <h2 className="text-4xl sm:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Featured Projects
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 font-medium max-w-3xl mx-auto">
               Explore some of my recent data science and AI projects that showcase my skills and expertise.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {featuredProjects.map((project, index) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white dark:bg-dark-lighter/80 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all cursor-pointer border border-gray-200 dark:border-gray-700"
-                onClick={() => navigate(`/projects?id=${project.id}`)}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                <div 
-                  className="h-48 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${project.image})` }}
+                <ProjectCard
+                  id={project.id}
+                  title={project.title}
+                  description={project.description}
+                  image={project.image}
+                  category={project.category}
+                  technologies={project.technologies}
+                  githubUrl={project.githubUrl}
+                  onViewDetails={handleViewDetails}
                 />
-                <div className="p-6">
-                  <span className="text-xs font-semibold text-primary py-1 px-2 rounded-full bg-primary/10 mb-4 inline-block">
-                    {project.category}
-                  </span>
-                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                  <p className="text-gray-800 dark:text-gray-200 font-medium text-sm mb-4 line-clamp-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.slice(0, 3).map((tech) => (
-                      <span 
-                        key={tech} 
-                        className="text-xs font-medium bg-gray-100 dark:bg-gray-800 py-1 px-2 rounded text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                    {project.technologies.length > 3 && (
-                      <span className="text-xs font-medium bg-gray-100 dark:bg-gray-800 py-1 px-2 rounded text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
-                        +{project.technologies.length - 3}
-                      </span>
-                    )}
-                  </div>
-                </div>
               </motion.div>
             ))}
           </div>
@@ -236,16 +234,24 @@ const Home: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center mt-12"
+            className="text-center mt-16"
           >
             <button 
               onClick={() => navigate('/projects')}
-              className="py-3 px-8 border-2 border-primary text-primary hover:bg-primary hover:text-white dark:text-white rounded-full transition-all"
+              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-all shadow-md hover:shadow-lg inline-flex items-center gap-2 font-medium"
             >
               View All Projects
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </button>
           </motion.div>
         </div>
+        
+        <ProjectModal 
+          projectId={selectedProjectId} 
+          onClose={handleCloseModal} 
+        />
       </section>
 
       {/* Skills Section */}
@@ -326,7 +332,7 @@ const Home: React.FC = () => {
             </p>
             <button 
               onClick={() => navigate('/contact')}
-              className="bg-white text-primary hover:bg-white/90 py-3 px-8 rounded-full font-medium shadow-lg hover:shadow-xl transition-all"
+              className="bg-gray-800 text-white hover:bg-gray-900 py-3 px-8 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
             >
               Get in Touch
             </button>

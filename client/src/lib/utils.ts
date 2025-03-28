@@ -14,9 +14,7 @@ export const userProfile = {
   availability: "Open to new opportunities",
   social: {
     github: "https://github.com/prabhmeharbedi",
-    linkedin: "https://linkedin.com/in/prabhmeharbedi",
-    twitter: "https://twitter.com",
-    medium: "https://medium.com"
+    linkedin: "https://linkedin.com/in/prabhmeharbedi"
   }
 };
 
@@ -52,8 +50,8 @@ export const projects = [
     image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     category: "Computer Vision",
     technologies: ["Keras", "TensorFlow", "OpenCV", "Python"],
-    githubUrl: "#",
-    liveUrl: "#",
+    githubUrl: "https://github.com/prabhmeharbedi/fracture-detection",
+    liveUrl: "https://fracture-detection-1.onrender.com/",
     details: {
       overview: "The Fracture Detection System is an advanced medical imaging tool that automatically identifies and highlights bone fractures in X-ray images. Designed to assist radiologists and emergency room physicians, it provides rapid preliminary analysis of X-ray images to help prioritize cases and reduce diagnostic errors.",
       technical: "Built using Convolutional Neural Networks (CNNs) with TensorFlow and Keras. The model was trained on a large dataset of annotated X-ray images with various fracture types. Data augmentation techniques were employed to improve model generalization across different imaging conditions.",
@@ -85,11 +83,11 @@ def create_fracture_detection_model(input_shape=(299, 299, 3)):
     id: 2,
     title: "Helmet Rule Violation Detection",
     description: "Real-time motorcyclist helmet rule violation detection system using YOLO v8 with 86.8% accuracy. Integrated with Jetson Nano for edge computing applications.",
-    image: "https://images.unsplash.com/photo-1610647752706-3bb12232b3e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1556610961-2fecc5927173?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
     category: "Computer Vision",
     technologies: ["YOLO v8", "Jetson Nano", "ResNet50", "VGG19"],
-    githubUrl: "#",
-    liveUrl: "#",
+    githubUrl: null,
+    liveUrl: null,
     details: {
       overview: "The Helmet Rule Violation Detection system is a real-time monitoring solution designed to automatically identify motorcyclists who are not wearing helmets. This system helps traffic authorities enforce safety regulations more effectively, potentially reducing head injuries and fatalities in motorcycle accidents.",
       technical: "The system uses YOLO v8 for object detection, trained on a custom dataset of motorcyclists with and without helmets. The model was optimized for deployment on Jetson Nano for edge computing capabilities, allowing real-time processing without requiring cloud connectivity. Comparative analysis was performed with ResNet50 and VGG19 architectures to identify the most effective approach.",
@@ -140,8 +138,8 @@ def process_stream(video_source=0):
     image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     category: "NLP",
     technologies: ["Python", "NLTK", "BeautifulSoup", "Tableau"],
-    githubUrl: "#",
-    liveUrl: "#",
+    githubUrl: "https://github.com/prabhmeharbedi/Article-Sentiment-Analysis",
+    liveUrl: null,
     details: {
       overview: "The Article Sentiment Analysis tool performs emotional tone analysis on news articles and blog posts, helping content creators, marketers, and researchers understand the sentiment patterns in online publications. The system scrapes content from various sources, analyzes the emotional tone, and presents insights through an interactive Tableau dashboard.",
       technical: "The project utilizes web scraping with Python (requests, BeautifulSoup) for data collection from diverse online sources. Natural Language Processing techniques are applied using NLTK, including tokenization, stopword removal, and sentiment classification. The data is then visualized through a custom Tableau dashboard for trend analysis.",
@@ -232,7 +230,7 @@ export const aiTools = [
 
 export const skills = {
   languages: ["Python", "SQL", "C/C++"],
-  mlai: ["NLP", "RAG", "Deep Learning", "Prompt Engineering", "Vector Databases", "Computer Vision"],
+  "ML / AI": ["NLP", "RAG", "Deep Learning", "Prompt Engineering", "Vector Databases", "Computer Vision"],
   frameworks: ["PyTorch", "TensorFlow", "Keras", "LangChain", "Hugging Face", "scikit-learn"],
   tools: ["Git", "VS Code", "Jupyter", "SQL Workbench", "Tableau", "MS Excel"]
 };
