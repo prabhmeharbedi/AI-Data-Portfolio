@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: portfolio
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RENDER
+        value: true
+      - key: PORT
+        sync: false # Uses the port assigned by Render
+      - key: DATABASE_URL
+        sync: false # Use the Render dashboard to set this value
+      - key: OPENAI_API_KEY
+        sync: false # Use the Render dashboard to set this value
+      - key: EMAIL_USER
+        sync: false # Use the Render dashboard to set this value
+      - key: EMAIL_PASS
+        sync: false # Use the Render dashboard to set this value
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_FROM
+        sync: false # Use the Render dashboard to set this value
+      - key: EMAIL_TO
+        sync: false # Use the Render dashboard to set this value 

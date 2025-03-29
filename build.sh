@@ -1,0 +1,55 @@
+#!/bin/bash
+set -e
+
+echo "=== Starting build process ==="
+
+# Install dependencies if needed
+if [ "$CI" = "true" ] || [ "$RENDER" = "true" ]; then
+  echo "=== Installing dependencies ==="
+  npm ci
+else
+  echo "=== Checking dependencies ==="
+  npm install
+fi
+
+# Run prebuild checks
+echo "=== Running prebuild checks ==="
+npm run prebuild
+
+# Build client files
+echo "=== Building client files ==="
+npx vite build --outDir dist/client
+
+# Build server files
+echo "=== Building server files ==="
+npx tsx scripts/build.ts
+
+# Ensure dist structure is correct
+echo "=== Verifying build structure ==="
+mkdir -p dist/client
+
+# Check if any of the files are missing
+if [ ! -f "dist/client/index.html" ]; then
+  echo "Warning: dist/client/index.html is missing"
+  
+  # Check if files are in a different location
+  if [ -f "dist/public/index.html" ]; then
+    echo "Found files in dist/public, copying to dist/client"
+    cp -r dist/public/* dist/client/
+  fi
+fi
+
+# Make sure server files exist
+if [ ! -f "dist/server/index.js" ]; then
+  echo "Error: Server files not built correctly"
+  exit 1
+fi
+
+# Print build info
+echo "=== Build complete ==="
+echo "Client files:"
+ls -la dist/client
+echo "Server files:"
+ls -la dist/server
+
+echo "=== Build successful ===" 

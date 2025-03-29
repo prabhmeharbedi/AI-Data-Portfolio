@@ -6,6 +6,9 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+// Determine if we're running on Render
+const isRender = process.env.RENDER === 'true';
+
 // Runtime configuration check
 function checkRequiredConfig() {
   const requiredEnvVars = [
@@ -70,22 +73,44 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // Use environment mode to determine setup
-  const isDevelopment = process.env.NODE_ENV !== "production";
-  log(`Running in ${isDevelopment ? "development" : "production"} mode`);
+  // Be very explicit about production mode detection
+  // We want to prioritize NODE_ENV but also check for Render environment
+  const isDevelopment = !(process.env.NODE_ENV === "production" || isRender);
+  
+  log(`Running in ${isDevelopment ? "development" : "production"} mode${isRender ? ' on Render' : ''}`);
   
   if (isDevelopment) {
+    // Only use Vite in development mode
     await setupVite(app, server);
   } else {
+    // Always use static file serving in production or on Render
     serveStatic(app);
   }
 
   // Use PORT from environment variables with fallback
+  // Note: Render sets PORT automatically, so we respect that
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   // In production, allow binding to any available interface
-  const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+  const host = process.env.NODE_ENV === "production" || isRender ? "0.0.0.0" : "localhost";
   
-  server.listen(port, host, () => {
-    log(`Server running on http://${host}:${port}`);
-  });
+  // Try to start the server, with fallback to another port if needed
+  const startServer = (attemptPort: number, maxRetries = 3, retryCount = 0) => {
+    server.listen(attemptPort, host)
+      .on('listening', () => {
+        log(`Server running on http://${host}:${attemptPort}`);
+      })
+      .on('error', (error: NodeJS.ErrnoException) => {
+        if (error.code === 'EADDRINUSE' && retryCount < maxRetries) {
+          // Port is in use, try another one
+          const nextPort = attemptPort + 1;
+          log(`Port ${attemptPort} is in use, trying port ${nextPort}...`);
+          startServer(nextPort, maxRetries, retryCount + 1);
+        } else {
+          log(`Failed to start server: ${error.message}`);
+          throw error;
+        }
+      });
+  };
+  
+  startServer(port);
 })();
