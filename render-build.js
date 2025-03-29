@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
 /**
- * Simplified build script for Render deployment
+ * Simplified build script for Render deployment (ES Module version)
  * This script avoids using any development tools that might not be available in the production environment
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get current directory (equivalent to __dirname in CommonJS)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ANSI color codes for better readability
 const colors = {
