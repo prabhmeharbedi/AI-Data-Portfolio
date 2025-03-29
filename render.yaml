@@ -3,7 +3,7 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: RENDER=true npm install && RENDER=true npm run build
+    buildCommand: npm install && RENDER=true node build.js
     startCommand: node start.js
     healthCheckPath: /api/health
     nodeVersion: 18.x
