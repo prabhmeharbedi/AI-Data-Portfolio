@@ -2,7 +2,7 @@
 
 /**
  * Improved build script for Render deployment (ES Module version)
- * Includes additional dependency checks and fallbacks for Render environment
+ * With direct static site generation
  */
 
 import { execSync } from 'child_process';
@@ -67,25 +67,46 @@ function ensureDir(dir) {
   }
 }
 
-// Check if a package is installed
-function checkPackageInstalled(packageName) {
+// Main build process
+async function build() {
+  log('Starting Render deployment build');
+  
+  // Explicitly set environment variables
+  process.env.RENDER = 'true';
+  process.env.NODE_ENV = 'production';
+  
+  // Clean previous build
+  log('Cleaning previous build...');
   try {
-    // Try to require the package to see if it's installed
-    require.resolve(packageName);
-    return true;
+    if (fs.existsSync('dist')) {
+      fs.rmSync('dist', { recursive: true, force: true });
+    }
   } catch (err) {
-    return false;
+    warning(`Failed to clean dist directory: ${err.message}`);
   }
-}
-
-// Create a simple HTML file as fallback
-function createFallbackHtml() {
-  const html = `<!DOCTYPE html>
+  
+  // Create required directories
+  ensureDir('dist');
+  ensureDir('dist/client');
+  ensureDir('dist/server');
+  
+  // Step 1: Try the direct static site generator
+  log('Using static site generator instead of Vite...');
+  try {
+    // Check if static-build.js exists
+    if (fs.existsSync('static-build.js')) {
+      exec('node static-build.js');
+      success('Static site generated successfully');
+    } else {
+      warning('static-build.js not found, creating a fallback HTML page');
+      
+      // Create a simple fallback HTML file
+      const fallbackHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generative AI & ML Portfolio</title>
+  <title>Prabhmehar Pal Singh Bedi - Portfolio</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -164,69 +185,35 @@ function createFallbackHtml() {
   <div class="loading"><div></div><div></div><div></div><div></div></div>
 </body>
 </html>`;
-
-  fs.writeFileSync('dist/client/index.html', html);
-  success('Created fallback HTML file');
-}
-
-// Check required dependencies
-function checkDependencies() {
-  const requiredPackages = ['vite', 'esbuild', 'tailwindcss'];
-  const missing = [];
-  
-  for (const pkg of requiredPackages) {
-    if (!checkPackageInstalled(pkg)) {
-      missing.push(pkg);
-    }
-  }
-  
-  if (missing.length > 0) {
-    warning(`Missing required packages: ${missing.join(', ')}`);
-    log('Installing missing packages...');
-    exec(`npm install --no-save ${missing.join(' ')}`);
-  }
-}
-
-// Main build process
-async function build() {
-  log('Starting Render deployment build');
-  
-  // Explicitly set environment variables
-  process.env.RENDER = 'true';
-  process.env.NODE_ENV = 'production';
-  
-  // Clean previous build
-  log('Cleaning previous build...');
-  try {
-    if (fs.existsSync('dist')) {
-      fs.rmSync('dist', { recursive: true, force: true });
+      fs.writeFileSync('dist/client/index.html', fallbackHtml);
+      success('Created fallback HTML file');
     }
   } catch (err) {
-    warning(`Failed to clean dist directory: ${err.message}`);
-  }
-  
-  // Create required directories
-  ensureDir('dist');
-  ensureDir('dist/client');
-  ensureDir('dist/server');
-  
-  // Check for required dependencies
-  log('Checking required dependencies...');
-  checkDependencies();
-  
-  // Step 1: Build client files
-  log('Building client files with Vite...');
-  if (!exec('npx vite build --outDir dist/client')) {
-    warning('Client build with Vite failed, trying alternative build method');
+    error(`Static site generation failed: ${err.message}`);
     
-    // Try direct vite build with config path
-    if (!exec('npx vite build -c vite.config.ts --outDir dist/client', true)) {
-      warning('Alternative Vite build failed, creating simple fallback HTML');
-      createFallbackHtml();
-    }
+    // Create a simple fallback HTML as backup
+    const emergencyHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabhmehar's Portfolio</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #111; color: #fff; text-align: center; padding: 50px 20px; }
+    h1 { color: #6C63FF; }
+  </style>
+</head>
+<body>
+  <h1>Prabhmehar Pal Singh Bedi</h1>
+  <p>Generative AI & Machine Learning Engineer</p>
+  <p>Contact: prabhmehar2509@gmail.com</p>
+</body>
+</html>`;
+    fs.writeFileSync('dist/client/index.html', emergencyHtml);
+    warning('Created emergency HTML fallback');
   }
   
-  // Step 2: Build server files
+  // Step 2: Build server files with esbuild
   log('Building server files with esbuild...');
   if (!exec('npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server')) {
     // Try alternate path if direct esbuild fails
