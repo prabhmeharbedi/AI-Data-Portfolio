@@ -4,13 +4,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx server/index.ts",
-    "prebuild": "tsx scripts/check-build.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server && cp dist/server/index.js dist/index.js",
-    "build-render": "node render-build.js",
-    "start": "NODE_ENV=production node start.js",
-    "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build-render": "node render-deploy.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
