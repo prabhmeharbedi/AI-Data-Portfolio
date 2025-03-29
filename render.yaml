@@ -3,7 +3,7 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: npm install && RENDER=true node build.js
+    buildCommand: npm install && RENDER=true npm run build-render
     startCommand: node start.js
     healthCheckPath: /api/health
     nodeVersion: 18.x
@@ -29,4 +29,4 @@ services:
       - key: EMAIL_FROM
         sync: false # Use the Render dashboard to set this value
       - key: EMAIL_TO
-        sync: false # Use the Render dashboard to set this value 
+        sync: false # Use the Render dashboard to set this value
