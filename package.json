@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "node build.js",
-    "start": "node start.js"
+    "start": "node start.js",
+    "check": "tsc"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
