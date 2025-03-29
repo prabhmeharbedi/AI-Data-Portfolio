@@ -10,20 +10,30 @@ export const log = (...args: any[]) => {
   console.log(colors.green("[server]"), ...args);
 };
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Fix the path to correctly locate client files in production mode
-const CLIENT_BUILD_PATH = path.resolve(__dirname, "..", "client");
-
 // Determine if we're running on Render
 const isRender = process.env.RENDER === 'true';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Fix the path to correctly locate client files in production mode
+const CLIENT_BUILD_PATH = isRender ? 
+  path.resolve(process.cwd(), "dist", "client") : 
+  path.resolve(__dirname, "..", "client");
+
 // Setup Vite dev server for development
 export async function setupVite(app: express.Express, server: ReturnType<typeof createServer>) {
+  // Force production mode on Render
+  if (isRender) {
+    log("Running on Render, forcing production mode and static file serving");
+    serveStatic(app);
+    return;
+  }
+  
   // Be more strict about production mode detection
-  const isProduction = process.env.NODE_ENV === "production" || isRender;
+  const isProduction = process.env.NODE_ENV === "production";
   
   if (isProduction) {
-    log(`Running in production mode (${isRender ? 'Render' : 'local'}), skipping Vite setup`);
+    log(`Running in production mode, skipping Vite setup`);
+    serveStatic(app);
     return;
   }
 

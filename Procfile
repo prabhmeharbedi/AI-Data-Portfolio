@@ -1,1 +1,1 @@
-web: npm start 
+web: NODE_ENV=production RENDER=true node start.js 
