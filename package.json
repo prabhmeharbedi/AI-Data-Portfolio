@@ -1,13 +1,13 @@
 {
-  "name": "rest-express",
+  "name": "ai-data-portfolio",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "build-render": "node render-deploy.js"
+    "dev": "tsx server/index.ts",
+    "build": "node render-deploy.js",
+    "start": "node start.js",
+    "check": "tsc"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

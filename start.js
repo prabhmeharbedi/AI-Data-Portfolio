@@ -1,7 +1,6 @@
 /**
- * Improved production server startup script (ES Module Version)
- * This ensures the server starts with the correct environment variables
- * and from the correct directory structure, with more robust error handling
+ * Simple start script for Render
+ * This script starts the server with the correct environment variables
  */
 
 // Force production mode
@@ -12,59 +11,44 @@ process.env.RENDER = 'true';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('STARTUP: Beginning server startup process');
-console.log('STARTUP: Current directory:', process.cwd());
-console.log('STARTUP: Looking for server entry point...');
-
-// ANSI color codes for better logs
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-};
-
-function log(msg) {
-  console.log(`${colors.cyan}STARTUP:${colors.reset} ${msg}`);
-}
-
-function error(msg) {
-  console.error(`${colors.red}STARTUP ERROR:${colors.reset} ${msg}`);
-}
-
-function success(msg) {
-  console.log(`${colors.green}STARTUP SUCCESS:${colors.reset} ${msg}`);
-}
+console.log('Starting server...');
+console.log('Current directory:', process.cwd());
 
 // Find the server file
 let serverFile = '';
 const possibleServerPaths = [
-  // Preferred path (from our build script)
   path.join(process.cwd(), 'dist', 'index.js'),
-  
-  // Alternative paths
   path.join(process.cwd(), 'dist', 'server', 'index.js'),
   path.join(process.cwd(), 'server', 'index.js'),
 ];
 
-// Create emergency fallback server if needed
-function createEmergencyServer() {
-  log('Creating emergency fallback server...');
+// Find the first path that exists
+for (const filePath of possibleServerPaths) {
+  try {
+    if (fs.existsSync(filePath)) {
+      serverFile = filePath;
+      console.log(`Found server file at ${serverFile}`);
+      break;
+    }
+  } catch (err) {
+    console.log(`Error checking ${filePath}: ${err.message}`);
+  }
+}
+
+// Create emergency server if none found
+if (!serverFile) {
+  console.log('No server file found, creating emergency server');
   
-  const fallbackPath = path.join(process.cwd(), 'dist', 'index.js');
+  const emergencyServerPath = path.join(process.cwd(), 'dist', 'index.js');
   const clientDir = path.join(process.cwd(), 'dist', 'client');
   
   // Ensure directories exist
-  if (!fs.existsSync(path.dirname(fallbackPath))) {
-    fs.mkdirSync(path.dirname(fallbackPath), { recursive: true });
+  if (!fs.existsSync(path.dirname(emergencyServerPath))) {
+    fs.mkdirSync(path.dirname(emergencyServerPath), { recursive: true });
   }
   
   if (!fs.existsSync(clientDir)) {
@@ -79,44 +63,57 @@ function createEmergencyServer() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio Website</title>
+  <title>Prabhmehar Pal Singh Bedi - Portfolio</title>
   <style>
-    body { 
-      font-family: system-ui, sans-serif; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      height: 100vh; 
-      margin: 0; 
-      background: #111; 
-      color: #fff; 
-      text-align: center; 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
       padding: 20px;
+      text-align: center;
     }
-    h1 { 
-      background: linear-gradient(90deg, #6C63FF, #FF6584); 
-      -webkit-background-clip: text; 
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #6C63FF, #8E24AA);
+      -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    p {
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: #6C63FF;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h1>Generative AI & ML Portfolio</h1>
-  <p>The portfolio is coming soon. Please check back later.</p>
+  <h1>Prabhmehar Pal Singh Bedi</h1>
+  <p>Generative AI Engineer & ML Enthusiast</p>
+  <p>My portfolio website is being prepared. Please check back soon!</p>
+  <p>Contact: <a href="mailto:prabhmehar2509@gmail.com">prabhmehar2509@gmail.com</a></p>
 </body>
 </html>`);
   }
   
-  // Create a simple server file
-  fs.writeFileSync(fallbackPath, `
+  // Create an emergency server file
+  fs.writeFileSync(emergencyServerPath, `
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // Health check endpoint for Render
 app.get('/api/health', (req, res) => {
@@ -127,160 +124,43 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve static files from client directory
-const clientDir = path.join(__dirname, '../client');
+// Serve static files
+const clientDir = path.join(__dirname, 'client');
+console.log('Serving static files from:', clientDir);
 app.use(express.static(clientDir));
 
-// Fallback route to index.html
+// Fallback route
 app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
   res.sendFile(path.join(clientDir, 'index.html'));
 });
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(\`Emergency fallback server running on port \${PORT}\`);
+  console.log(\`Emergency server running on port \${PORT}\`);
 });
 `);
   
-  return fallbackPath;
-}
-
-// List all files in the dist directory for debugging
-const distPath = path.join(process.cwd(), 'dist');
-if (fs.existsSync(distPath)) {
-  log('Files in dist directory:');
-  try {
-    const distFiles = fs.readdirSync(distPath);
-    distFiles.forEach(file => {
-      log(`- ${file}`);
-      // Check subdirectories
-      const filePath = path.join(distPath, file);
-      if (fs.statSync(filePath).isDirectory()) {
-        try {
-          const subFiles = fs.readdirSync(filePath);
-          subFiles.forEach(subFile => {
-            log(`  - ${file}/${subFile}`);
-          });
-        } catch (err) {
-          log(`  (error reading subdirectory: ${err.message})`);
-        }
-      }
-    });
-  } catch (err) {
-    log(`Error reading dist directory: ${err.message}`);
-  }
-} else {
-  log('dist directory not found, will create emergency server');
-}
-
-// Find the first path that exists
-for (const filePath of possibleServerPaths) {
-  try {
-    if (fs.existsSync(filePath)) {
-      serverFile = filePath;
-      log(`Found server file at ${serverFile}`);
-      break;
-    }
-  } catch (err) {
-    log(`Error checking ${filePath}: ${err.message}`);
-  }
-}
-
-// Create emergency server if none found
-if (!serverFile) {
-  log('No server file found, creating emergency fallback server');
-  serverFile = createEmergencyServer();
-  
-  if (!serverFile) {
-    error('Could not create emergency server!');
-    process.exit(1);
-  }
-}
-
-// Log environment info
-log('Starting server with:');
-log(`NODE_ENV=${process.env.NODE_ENV}`);
-log(`RENDER=${process.env.RENDER}`);
-log(`PORT=${process.env.PORT || '(default)'}`);
-
-// Install missing dependencies if any
-try {
-  const requiredPackages = ['express', 'path', 'url'];
-  log('Checking for required packages...');
-  
-  for (const pkg of requiredPackages) {
-    try {
-      // Try to import the package dynamically
-      await import(pkg);
-    } catch (err) {
-      log(`Package ${pkg} not found, installing...`);
-      execSync(`npm install --no-save ${pkg}`, { stdio: 'inherit' });
-    }
-  }
-} catch (err) {
-  log(`Error checking packages: ${err.message}`);
+  serverFile = emergencyServerPath;
+  console.log('Created emergency server file at', serverFile);
 }
 
 // Start the server
-log(`Executing: node ${serverFile}`);
+console.log(`Starting server from: ${serverFile}`);
 try {
-  // Use dynamic import for either ESM or CommonJS modules
+  // Use dynamic import for ESM modules
   import(serverFile)
     .catch(err => {
-      error(`Failed to import server file: ${err.message}`);
-      error(err.stack);
-      
-      // If dynamic import fails, try using the URL approach
-      import(`file://${serverFile}`)
-        .catch(finalErr => {
-          error(`Both import methods failed: ${finalErr.message}`);
-          createLastResortServer();
-        });
+      console.error(`Failed to import server file: ${err.message}`);
+      console.error(err.stack);
+      process.exit(1);
     });
     
-  success('Server import initiated');
+  console.log('Server import initiated');
 } catch (err) {
-  error(`Failed to start server: ${err.message}`);
-  error(err.stack);
-  createLastResortServer();
-}
-
-// Create and start a last resort emergency server
-async function createLastResortServer() {
-  error('Attempting last-resort inline server...');
-  try {
-    // Try to import express
-    const expressModule = await import('express');
-    const express = expressModule.default;
-    
-    const app = express();
-    const PORT = process.env.PORT || 3000;
-    
-    // Health check for Render
-    app.get('/api/health', (req, res) => {
-      res.status(200).json({ status: 'ok' });
-    });
-    
-    // Serve static files if they exist
-    const clientPath = path.join(process.cwd(), 'dist', 'client');
-    if (fs.existsSync(clientPath)) {
-      app.use(express.static(clientPath));
-    }
-    
-    // Fallback response
-    app.get('*', (req, res) => {
-      if (fs.existsSync(path.join(clientPath, 'index.html'))) {
-        res.sendFile(path.join(clientPath, 'index.html'));
-      } else {
-        res.send('Portfolio website coming soon. Please check back later.');
-      }
-    });
-    
-    app.listen(PORT, '0.0.0.0', () => {
-      success(`Last-resort server running on port ${PORT}`);
-    });
-  } catch (finalErr) {
-    error(`Last-resort server also failed: ${finalErr.message}`);
-    process.exit(1);
-  }
+  console.error(`Failed to start server: ${err.message}`);
+  console.error(err.stack);
+  process.exit(1);
 }
