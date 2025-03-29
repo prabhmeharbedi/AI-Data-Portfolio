@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx server/index.ts",
+    "prebuild": "tsx scripts/prebuild-check.ts",
     "build": "vite build --outDir dist/client && tsx scripts/build.ts",
     "start": "NODE_ENV=production node dist/server/index.js",
     "check": "tsc",

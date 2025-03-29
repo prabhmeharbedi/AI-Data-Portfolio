@@ -299,4 +299,18 @@ const Home: React.FC = () => {
               (activeSkillCategory === null || activeSkillCategory === category) && 
               categorySkills.map((skill, index) => (
                 <motion.div
-                  key={`${category}-${index}`
+                  key={`${category}-${index}`}
+                  className="bg-card rounded-md p-3 shadow-sm"
+                >
+                  {skill}
+                </motion.div>
+              ))
+            ))}
+          </motion.div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default Home;

@@ -6,6 +6,27 @@
 import { build } from 'esbuild';
 import fs from 'fs';
 import path from 'path';
+import { runChecks } from './prebuild-check.js';
+
+// Check for common errors before building
+async function prebuildChecks() {
+  console.log('Running prebuild checks...');
+  
+  try {
+    // Run our comprehensive checks
+    const checksPass = await runChecks();
+    if (!checksPass) {
+      console.error('Syntax checks failed. Please fix the issues before building.');
+      return false;
+    }
+    
+    console.log('Prebuild checks completed successfully.');
+    return true;
+  } catch (error) {
+    console.error('Prebuild checks failed:', error);
+    return false;
+  }
+}
 
 async function buildServer() {
   console.log('Building server code...');
@@ -33,19 +54,36 @@ async function buildServer() {
         'picocolors',
         '@neondatabase/serverless',
         'openai',
+        'dotenv',
         // Add other packages as needed
       ],
       define: {
         'process.env.NODE_ENV': '"production"'
       },
+      logLevel: 'info',
     });
 
     console.log('Server build completed successfully!');
+    return true;
   } catch (error) {
     console.error('Error building server:', error);
-    process.exit(1);
+    return false;
   }
 }
 
-// Run the build
-buildServer(); 
+// Run the build process
+(async () => {
+  const prebuildSuccess = await prebuildChecks();
+  if (!prebuildSuccess) {
+    console.error('Prebuild checks failed. Aborting build.');
+    process.exit(1);
+  }
+  
+  const buildSuccess = await buildServer();
+  if (!buildSuccess) {
+    console.error('Server build failed. Exiting with error code.');
+    process.exit(1);
+  }
+  
+  console.log('Build process completed successfully!');
+})(); 
