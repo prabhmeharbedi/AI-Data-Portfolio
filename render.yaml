@@ -3,7 +3,7 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: npm install && node render-deploy.js
+    buildCommand: npm install && node build.js
     startCommand: node start.js
     envVars:
       - key: NODE_ENV

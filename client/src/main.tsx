@@ -1,6 +1,7 @@
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import "./index.css";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
 
 // Create custom CSS variables for our theme colors
 document.documentElement.style.setProperty('--primary', '#6C63FF');
@@ -22,4 +23,9 @@ document.documentElement.style.setProperty('--light-darker', '#EDF0F5');
 document.documentElement.style.setProperty('--dark-bg', '#121212');
 document.documentElement.style.setProperty('--dark-lighter', '#1E1E1E');
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById('root')!);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
