@@ -3,9 +3,10 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    buildCommand: RENDER=true npm install && RENDER=true npm run build
+    startCommand: node start.js
     healthCheckPath: /api/health
+    nodeVersion: 18.x
     envVars:
       - key: NODE_ENV
         value: production

@@ -45,11 +45,22 @@ if [ ! -f "dist/server/index.js" ]; then
   exit 1
 fi
 
+# Create a simpler structure for Render if needed
+if [ "$RENDER" = "true" ]; then
+  echo "=== Creating Render-friendly file structure ==="
+  # Copy server/index.js to dist/index.js for Render
+  cp dist/server/index.js dist/index.js
+fi
+
 # Print build info
 echo "=== Build complete ==="
 echo "Client files:"
 ls -la dist/client
 echo "Server files:"
 ls -la dist/server
+if [ -f "dist/index.js" ]; then
+  echo "Render-ready entrypoint:"
+  ls -la dist/index.js
+fi
 
 echo "=== Build successful ===" 
