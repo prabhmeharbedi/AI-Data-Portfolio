@@ -1,5 +1,5 @@
 /**
- * Improved production server startup script
+ * Improved production server startup script (ES Module Version)
  * This ensures the server starts with the correct environment variables
  * and from the correct directory structure, with more robust error handling
  */
@@ -9,8 +9,13 @@ process.env.NODE_ENV = 'production';
 // Force Render mode
 process.env.RENDER = 'true';
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('STARTUP: Beginning server startup process');
 console.log('STARTUP: Current directory:', process.cwd());
@@ -205,10 +210,11 @@ try {
   
   for (const pkg of requiredPackages) {
     try {
-      require.resolve(pkg);
+      // Try to import the package dynamically
+      await import(pkg);
     } catch (err) {
       log(`Package ${pkg} not found, installing...`);
-      require('child_process').execSync(`npm install --no-save ${pkg}`, { stdio: 'inherit' });
+      execSync(`npm install --no-save ${pkg}`, { stdio: 'inherit' });
     }
   }
 } catch (err) {
@@ -218,27 +224,35 @@ try {
 // Start the server
 log(`Executing: node ${serverFile}`);
 try {
-  // Dynamic import for ESM modules
-  if (serverFile.endsWith('.js')) {
-    // For CommonJS
-    require(serverFile);
-  } else {
-    // For ESM
-    import(serverFile).catch(err => {
+  // Use dynamic import for either ESM or CommonJS modules
+  import(serverFile)
+    .catch(err => {
       error(`Failed to import server file: ${err.message}`);
       error(err.stack);
-      process.exit(1);
+      
+      // If dynamic import fails, try using the URL approach
+      import(`file://${serverFile}`)
+        .catch(finalErr => {
+          error(`Both import methods failed: ${finalErr.message}`);
+          createLastResortServer();
+        });
     });
-  }
-  success('Server started successfully');
+    
+  success('Server import initiated');
 } catch (err) {
   error(`Failed to start server: ${err.message}`);
   error(err.stack);
-  
-  // Try one last emergency approach - inline express server
+  createLastResortServer();
+}
+
+// Create and start a last resort emergency server
+async function createLastResortServer() {
   error('Attempting last-resort inline server...');
   try {
-    const express = require('express');
+    // Try to import express
+    const expressModule = await import('express');
+    const express = expressModule.default;
+    
     const app = express();
     const PORT = process.env.PORT || 3000;
     
