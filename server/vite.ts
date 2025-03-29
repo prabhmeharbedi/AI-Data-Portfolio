@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createServer } from "http";
-import { Server } from "ws";
+import WebSocket from "ws";
 import colors from "picocolors";
 
 export const log = (...args: any[]) => {
@@ -11,7 +11,7 @@ export const log = (...args: any[]) => {
 };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CLIENT_BUILD_PATH = path.resolve(__dirname, "..", "dist", "client");
+const CLIENT_BUILD_PATH = path.resolve(__dirname, "..", "client");
 
 // Setup Vite dev server for development
 export async function setupVite(app: express.Express, server: ReturnType<typeof createServer>) {
@@ -52,7 +52,7 @@ export async function setupVite(app: express.Express, server: ReturnType<typeof 
   });
 
   // Set up websocket support
-  const wss = new Server({ server });
+  const wss = new WebSocket.Server({ server });
   wss.on("connection", (ws) => {
     log("Client connected to websocket");
     ws.on("message", (message) => {

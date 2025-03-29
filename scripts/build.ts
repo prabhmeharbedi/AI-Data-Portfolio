@@ -55,6 +55,19 @@ async function buildServer() {
         '@neondatabase/serverless',
         'openai',
         'dotenv',
+        'nodemailer', // Add nodemailer to external to avoid dynamic require issues
+        'events',     // Add events module which is required by nodemailer
+        'crypto',     // Add crypto module which might be required
+        'stream',     // Add stream module which might be required
+        'util',       // Add util module which might be required
+        'fs',         // Add fs module which might be required
+        'http',       // Add http module which might be required
+        'https',      // Add https module which might be required
+        'net',        // Add net module which might be required
+        'tls',        // Add tls module which might be required
+        'path',       // Add path module which might be required
+        'zlib',       // Add zlib module which might be required
+        'os',         // Add os module which might be required
         // Add other packages as needed
       ],
       define: {
