@@ -3,7 +3,8 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: npm install && node render-build.js
+    # Updated build command with explicit dependency install
+    buildCommand: npm install && npm install vite esbuild tailwindcss && node render-build.js
     startCommand: node start.js
     healthCheckPath: /api/health
     nodeVersion: 18.x
