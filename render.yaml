@@ -3,5 +3,5 @@ services:
     name: portfolio
     env: node
     plan: free
-    buildCommand: npm install && npm install -g vite esbuild @vitejs/plugin-react tailwindcss && vite build && node build.js
+    buildCommand: npm install && node render-deploy.js
     startCommand: node start.js
